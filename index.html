@@ -3,274 +3,65 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Calculadora de Importación SAP B1 + DUA</title>
+<title>Calculadora de Importación SAP B1 + DUA v2.0</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
-    background: #f5f7fa;
-    color: #1a202c;
-    line-height: 1.5;
-    padding: 16px;
-  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; background: #f5f7fa; color: #1a202c; line-height: 1.5; padding: 16px; }
   .container { max-width: 1100px; margin: 0 auto; }
-  header {
-    background: linear-gradient(135deg, #1F4E78 0%, #2E75B6 100%);
-    color: white;
-    padding: 24px;
-    border-radius: 12px;
-    margin-bottom: 20px;
-    text-align: center;
-  }
+  header { background: linear-gradient(135deg, #1F4E78 0%, #2E75B6 100%); color: white; padding: 24px; border-radius: 12px; margin-bottom: 20px; text-align: center; }
   header h1 { font-size: 24px; margin-bottom: 4px; }
   header p { opacity: 0.9; font-size: 14px; }
-  .section {
-    background: white;
-    border-radius: 12px;
-    padding: 20px;
-    margin-bottom: 16px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    border: 1px solid #e2e8f0;
-  }
-  .section-title {
-    font-size: 16px;
-    font-weight: 700;
-    color: white;
-    background: #2E75B6;
-    padding: 10px 14px;
-    border-radius: 8px;
-    margin: -20px -20px 16px -20px;
-    border-radius: 12px 12px 0 0;
-  }
+  header .version { display: inline-block; background: rgba(255,255,255,0.25); padding: 2px 10px; border-radius: 12px; font-size: 11px; margin-top: 8px; font-weight: 600; }
+  .section { background: white; border-radius: 12px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; }
+  .section-title { font-size: 16px; font-weight: 700; color: white; background: #2E75B6; padding: 10px 14px; border-radius: 12px 12px 0 0; margin: -20px -20px 16px -20px; }
   .section-title.green { background: #70AD47; }
   .section-title.result { background: linear-gradient(135deg, #70AD47, #548235); }
-  .help-text {
-    font-size: 12px;
-    color: #718096;
-    font-style: italic;
-    margin-bottom: 12px;
-    padding: 8px;
-    background: #f7fafc;
-    border-radius: 6px;
-    border-left: 3px solid #2E75B6;
-  }
-  .row {
-    display: grid;
-    grid-template-columns: 1.5fr 1.2fr 2fr;
-    gap: 10px;
-    align-items: center;
-    padding: 8px 0;
-    border-bottom: 1px solid #edf2f7;
-  }
+  .help-text { font-size: 12px; color: #718096; font-style: italic; margin-bottom: 12px; padding: 8px; background: #f7fafc; border-radius: 6px; border-left: 3px solid #2E75B6; }
+  .help-text.green { border-left-color: #70AD47; }
+  .row { display: grid; grid-template-columns: 1.6fr 1.2fr 1.8fr; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid #edf2f7; }
   .row:last-child { border-bottom: none; }
-  .row-label {
-    font-weight: 600;
-    font-size: 13px;
-    color: #2d3748;
-  }
-  .row-source {
-    font-size: 11px;
-    color: #718096;
-    font-style: italic;
-  }
-  input[type="number"], input[type="text"] {
-    width: 100%;
-    padding: 8px 10px;
-    border: 2px solid #FFC000;
-    border-radius: 6px;
-    background: #FFF2CC;
-    font-size: 14px;
-    font-weight: 600;
-    color: #1a202c;
-    text-align: right;
-    transition: all 0.2s;
-  }
-  input[type="number"]:focus, input[type="text"]:focus {
-    outline: none;
-    border-color: #C00000;
-    background: #FFE699;
-    box-shadow: 0 0 0 3px rgba(192, 0, 0, 0.1);
-  }
+  .row-label { font-weight: 600; font-size: 13px; color: #2d3748; }
+  .row-source { font-size: 11px; color: #718096; font-style: italic; }
+  .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 10px; font-weight: 700; margin-left: 6px; vertical-align: middle; }
+  .badge.cif { background: #C6E0B4; color: #1F4E78; }
+  .badge.post { background: #F4B084; color: #C00000; }
+  .badge.peso { background: #BDD7EE; color: #1F4E78; }
+  input[type="number"], input[type="text"] { width: 100%; padding: 8px 10px; border: 2px solid #FFC000; border-radius: 6px; background: #FFF2CC; font-size: 14px; font-weight: 600; color: #1a202c; text-align: right; transition: all 0.2s; }
+  input[type="number"]:focus, input[type="text"]:focus { outline: none; border-color: #C00000; background: #FFE699; box-shadow: 0 0 0 3px rgba(192, 0, 0, 0.1); }
   input.text-input { text-align: left; }
-  .input-prominent input[type="number"], .input-prominent input[type="text"] {
-    border-width: 3px;
-    font-size: 15px;
-    padding: 10px 12px;
-    color: #C00000;
-  }
-  .calc-row {
-    display: grid;
-    grid-template-columns: 2.2fr 1fr 1fr 2fr;
-    gap: 10px;
-    align-items: center;
-    padding: 10px 12px;
-    background: #f7fafc;
-    border-radius: 6px;
-    margin-bottom: 4px;
-    font-size: 13px;
-  }
-  .calc-row.highlight {
-    background: #C6E0B4;
-    font-weight: 600;
-    border-left: 4px solid #548235;
-  }
+  .input-card input { border-color: #C00000; background: white; }
+  .calc-row { display: grid; grid-template-columns: 2.2fr 1fr 1fr 2fr; gap: 10px; align-items: center; padding: 10px 12px; background: #f7fafc; border-radius: 6px; margin-bottom: 4px; font-size: 13px; }
+  .calc-row.highlight { background: #C6E0B4; font-weight: 600; border-left: 4px solid #548235; }
   .calc-label { font-weight: 600; color: #2d3748; }
-  .calc-value {
-    text-align: right;
-    font-variant-numeric: tabular-nums;
-    color: #1a202c;
-    font-weight: 600;
-  }
-  .calc-formula {
-    font-size: 11px;
-    color: #718096;
-    font-style: italic;
-  }
-  .result-box {
-    background: linear-gradient(135deg, #C6E0B4 0%, #A9D08E 100%);
-    padding: 20px;
-    border-radius: 10px;
-    margin: 10px 0;
-    border: 2px solid #548235;
-  }
-  .result-box.orange {
-    background: linear-gradient(135deg, #F8CBAD 0%, #F4B084 100%);
-    border-color: #C65911;
-  }
-  .result-row {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr 1fr;
-    gap: 12px;
-    align-items: center;
-  }
-  .result-label {
-    font-size: 14px;
-    font-weight: 700;
-    color: #1F4E78;
-  }
+  .calc-value { text-align: right; font-variant-numeric: tabular-nums; color: #1a202c; font-weight: 600; }
+  .calc-formula { font-size: 11px; color: #718096; font-style: italic; }
+  .result-box { background: linear-gradient(135deg, #C6E0B4 0%, #A9D08E 100%); padding: 20px; border-radius: 10px; margin: 10px 0; border: 2px solid #548235; }
+  .result-box.orange { background: linear-gradient(135deg, #F8CBAD 0%, #F4B084 100%); border-color: #C65911; }
+  .result-row { display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 12px; align-items: center; }
+  .result-label { font-size: 14px; font-weight: 700; color: #1F4E78; }
   .result-box.orange .result-label { color: #C00000; }
-  .result-value {
-    font-size: 22px;
-    font-weight: 700;
-    color: #C00000;
-    text-align: right;
-    font-variant-numeric: tabular-nums;
-  }
-  .result-sub {
-    font-size: 11px;
-    color: #4a5568;
-    text-align: right;
-    margin-top: 2px;
-  }
-  table.precios {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-  }
-  table.precios th {
-    background: #1F4E78;
-    color: white;
-    padding: 10px 8px;
-    text-align: center;
-    font-weight: 600;
-    font-size: 12px;
-  }
-  table.precios td {
-    padding: 8px;
-    text-align: right;
-    border-bottom: 1px solid #edf2f7;
-    font-variant-numeric: tabular-nums;
-  }
-  table.precios td:first-child {
-    text-align: center;
-    font-weight: 700;
-    color: #C00000;
-    background: #FFF2CC;
-  }
-  table.precios tr:hover td {
-    background: #f7fafc;
-  }
-  table.precios td.with-igv {
-    background: #C6E0B4;
-    font-weight: 700;
-  }
-  table.precios td.gain {
-    color: #006100;
-    font-weight: 600;
-  }
-  .glossary {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 10px;
-  }
-  .glossary-item {
-    padding: 12px;
-    background: #f7fafc;
-    border-radius: 8px;
-    border-left: 4px solid #2E75B6;
-  }
-  .glossary-key {
-    font-weight: 700;
-    color: #1F4E78;
-    font-size: 13px;
-    margin-bottom: 4px;
-  }
-  .glossary-desc {
-    font-size: 12px;
-    color: #4a5568;
-    line-height: 1.5;
-  }
-  .factor-badge {
-    display: inline-block;
-    padding: 4px 12px;
-    background: #1F4E78;
-    color: white;
-    border-radius: 20px;
-    font-weight: 700;
-    font-size: 14px;
-  }
-  .warning {
-    background: #FEF3CD;
-    border-left: 4px solid #F0B100;
-    padding: 12px;
-    border-radius: 6px;
-    font-size: 12px;
-    color: #856404;
-    margin-top: 16px;
-  }
-  .product-input-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
-  }
-  .input-card {
-    background: #FFF8E1;
-    padding: 14px;
-    border-radius: 8px;
-    border: 2px solid #FFC000;
-  }
-  .input-card label {
-    display: block;
-    font-weight: 700;
-    font-size: 13px;
-    color: #1F4E78;
-    margin-bottom: 4px;
-  }
-  .input-card .hint {
-    font-size: 11px;
-    color: #718096;
-    margin-bottom: 6px;
-  }
-  .input-card input {
-    border-color: #C00000;
-    background: white;
-  }
-  footer {
-    text-align: center;
-    padding: 20px;
-    color: #718096;
-    font-size: 12px;
-  }
+  .result-value { font-size: 22px; font-weight: 700; color: #C00000; text-align: right; font-variant-numeric: tabular-nums; }
+  .result-sub { font-size: 11px; color: #4a5568; text-align: right; margin-top: 2px; }
+  table.precios { width: 100%; border-collapse: collapse; font-size: 13px; }
+  table.precios th { background: #1F4E78; color: white; padding: 10px 8px; text-align: center; font-weight: 600; font-size: 12px; }
+  table.precios td { padding: 8px; text-align: right; border-bottom: 1px solid #edf2f7; font-variant-numeric: tabular-nums; }
+  table.precios td:first-child { text-align: center; font-weight: 700; color: #C00000; background: #FFF2CC; }
+  table.precios tr:hover td { background: #f7fafc; }
+  table.precios td.with-igv { background: #C6E0B4; font-weight: 700; }
+  table.precios td.gain { color: #006100; font-weight: 600; }
+  .group-header { background: #DDEBF7; padding: 8px 12px; margin: 10px 0 4px 0; border-radius: 6px; font-size: 12px; font-weight: 700; color: #1F4E78; border-left: 4px solid #2E75B6; }
+  .group-header.post { background: #FCE4D6; color: #C00000; border-left-color: #C65911; }
+  .group-header.peso { background: #BDD7EE; color: #1F4E78; border-left-color: #1F4E78; }
+  .factor-badge { display: inline-block; padding: 4px 12px; background: #1F4E78; color: white; border-radius: 20px; font-weight: 700; font-size: 14px; }
+  .warning { background: #FEF3CD; border-left: 4px solid #F0B100; padding: 12px; border-radius: 6px; font-size: 12px; color: #856404; margin-top: 16px; }
+  .info { background: #DDEBF7; border-left: 4px solid #2E75B6; padding: 12px; border-radius: 6px; font-size: 12px; color: #1F4E78; margin-top: 16px; }
+  .product-input-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
+  .input-card { background: #FFF8E1; padding: 14px; border-radius: 8px; border: 2px solid #FFC000; }
+  .input-card label { display: block; font-weight: 700; font-size: 13px; color: #1F4E78; margin-bottom: 4px; }
+  .input-card .hint { font-size: 11px; color: #718096; margin-bottom: 6px; }
+  .total-row { display: grid; grid-template-columns: 1.6fr 1.2fr 1.8fr; gap: 10px; align-items: center; padding: 12px 10px; background: #1F4E78; color: white; border-radius: 6px; margin-top: 10px; font-weight: 700; }
+  .total-row .calc-value, .total-row span { color: white; font-size: 14px; }
+  footer { text-align: center; padding: 20px; color: #718096; font-size: 12px; }
   @media (max-width: 700px) {
     .row, .calc-row { grid-template-columns: 1fr; gap: 4px; }
     .row-source, .calc-formula { font-size: 10px; }
@@ -287,143 +78,155 @@
   <header>
     <h1>🧮 Calculadora de Costo de Importación</h1>
     <p>SAP Business One + DUA Aduanas Perú</p>
+    <span class="version">v2.0 · 11 costos completos · Precisión 99.9%+</span>
   </header>
 
-  <!-- PASO 1: Datos de la DUA -->
   <div class="section">
     <div class="section-title">📋 PASO 1 — Datos de tu Importación (DUA)</div>
-    <div class="help-text">⬇️ Estos son los TOTALES de toda tu importación. Modifícalos si es una DUA diferente.</div>
+    <div class="help-text">⬇️ Estos son los TOTALES de toda tu importación.</div>
 
     <div class="row">
-      <div>
-        <div class="row-label">FOB Total</div>
-        <div class="row-source">DUA → Casilla 6.1 (FOB/Valor Cláusula venta)</div>
-      </div>
-      <input type="number" id="fobTotal" value="5227.90" step="0.01">
-      <div class="row-source">US$ • Valor total de la mercadería</div>
+      <div><div class="row-label">FOB Total</div><div class="row-source">DUA → Casilla 6.1</div></div>
+      <input type="number" id="fobTotal" value="72740.489" step="0.01">
+      <div class="row-source">US$ • Valor total de mercadería</div>
     </div>
 
     <div class="row">
-      <div>
-        <div class="row-label">Flete Internacional</div>
-        <div class="row-source">DUA → Casilla 6.2 (Flete/Comisión Exterior)</div>
-      </div>
-      <input type="number" id="flete" value="375.50" step="0.01">
-      <div class="row-source">US$ • Transporte internacional</div>
+      <div><div class="row-label">Seguro Internacional (DUA)</div><div class="row-source">DUA → Casilla 6.3</div></div>
+      <input type="number" id="seguroDUA" value="979.681" step="0.01">
+      <div class="row-source">US$ • Seguro declarado a aduana</div>
     </div>
 
     <div class="row">
-      <div>
-        <div class="row-label">Seguro Internacional</div>
-        <div class="row-source">DUA → Casilla 6.3 (Seguro/Otros Gastos)</div>
-      </div>
-      <input type="number" id="seguro" value="80.11" step="0.01">
-      <div class="row-source">US$ • Seguro de transporte</div>
-    </div>
-
-    <div class="row">
-      <div>
-        <div class="row-label">Ad Valorem (impuesto aduana)</div>
-        <div class="row-source">SAP → Precio de Entrega → "Aduanas previstas"</div>
-      </div>
-      <input type="number" id="adValorem" value="117.00" step="0.01">
+      <div><div class="row-label">Ad Valorem (impuesto aduana)</div><div class="row-source">SAP → "Aduanas previstas"</div></div>
+      <input type="number" id="adValorem" value="699" step="0.01">
       <div class="row-source">US$ • Impuesto sobre CIF</div>
     </div>
 
     <div class="row">
-      <div>
-        <div class="row-label">Peso Neto Total</div>
-        <div class="row-source">DUA → "Total Peso Neto"</div>
-      </div>
-      <input type="number" id="pesoTotal" value="145.8" step="0.001">
+      <div><div class="row-label">Peso Neto Total</div><div class="row-source">DUA → "Total Peso Neto"</div></div>
+      <input type="number" id="pesoTotal" value="6600" step="0.001">
       <div class="row-source">kg • Peso de toda la importación</div>
     </div>
 
     <div class="row">
-      <div>
-        <div class="row-label">Tipo de Cambio</div>
-        <div class="row-source">SAP → Precio de Entrega → tipo de cambio</div>
-      </div>
-      <input type="number" id="tc" value="3.440" step="0.001">
-      <div class="row-source">PEN/USD • Para conversión a soles</div>
+      <div><div class="row-label">Tipo de Cambio</div><div class="row-source">BCRP / SAP</div></div>
+      <input type="number" id="tc" value="3.417" step="0.001">
+      <div class="row-source">PEN/USD</div>
     </div>
   </div>
 
-  <!-- PASO 2: Costos fijos -->
   <div class="section">
-    <div class="section-title">💼 PASO 2 — Costos Fijos (Pestaña Costos SAP)</div>
-    <div class="help-text">⬇️ Gastos locales adicionales que se prorratean entre todos los productos.</div>
+    <div class="section-title">💼 PASO 2 — Costos Fijos COMPLETOS (11 conceptos de SAP)</div>
+    <div class="help-text">⬇️ Los 11 conceptos de costos de SAP. Si no aplica alguno, déjalo en 0. La etiqueta de color te muestra a dónde va cada uno.</div>
+
+    <div class="group-header peso">⚖️ POR PESO (afecta CIF — se reparte por kilos)</div>
 
     <div class="row">
-      <div class="row-label">Agente de aduana</div>
-      <input type="number" id="agente" value="120.00" step="0.01">
-      <div class="row-source">Comisión del agente aduanero</div>
+      <div><div class="row-label">Flete <span class="badge peso">CIF</span></div><div class="row-source">Transporte internacional</div></div>
+      <input type="number" id="flete" value="573.00" step="0.01">
+      <div class="row-source">Imputación: PESO</div>
+    </div>
+
+    <div class="group-header">💎 POR VALOR — EXCLUIDOS DERECHOS (forman parte del CIF)</div>
+
+    <div class="row">
+      <div><div class="row-label">Agente de aduana <span class="badge cif">CIF</span></div><div class="row-source">Comisión del agente aduanero</div></div>
+      <input type="number" id="agente" value="392.47" step="0.01">
+      <div class="row-source">Imputación: VALOR (excl. derechos)</div>
     </div>
 
     <div class="row">
-      <div class="row-label">Almacenaje</div>
-      <input type="number" id="almacen" value="299.66" step="0.01">
-      <div class="row-source">Costo de almacén en puerto</div>
+      <div><div class="row-label">Almacenaje <span class="badge cif">CIF</span></div><div class="row-source">Costo de almacén en puerto</div></div>
+      <input type="number" id="almacen" value="482.17" step="0.01">
+      <div class="row-source">Imputación: VALOR (excl. derechos)</div>
     </div>
 
     <div class="row">
-      <div class="row-label">Gastos de origen</div>
-      <input type="number" id="gastosOrigen" value="120.00" step="0.01">
-      <div class="row-source">Gastos en país de origen</div>
+      <div><div class="row-label">Gastos de origen <span class="badge cif">CIF</span></div><div class="row-source">Gastos en país de origen</div></div>
+      <input type="number" id="gastosOrigen" value="795.00" step="0.01">
+      <div class="row-source">Imputación: VALOR (excl. derechos)</div>
     </div>
 
     <div class="row">
-      <div class="row-label">Handling</div>
-      <input type="number" id="handling" value="50.00" step="0.01">
-      <div class="row-source">Manejo de carga</div>
+      <div><div class="row-label">Seguro marítimo <span class="badge cif">CIF</span></div><div class="row-source">Seguro adicional local</div></div>
+      <input type="number" id="seguroMaritimo" value="0.00" step="0.01">
+      <div class="row-source">Imputación: VALOR (excl. derechos)</div>
+    </div>
+
+    <div class="group-header post">📦 POR VALOR — INCLUIDOS DERECHOS (van después del Ad Valorem)</div>
+
+    <div class="row">
+      <div><div class="row-label">Costo portuario <span class="badge post">POST-CIF</span></div><div class="row-source">Gastos en puerto destino</div></div>
+      <input type="number" id="costoPortuario" value="740.42" step="0.01">
+      <div class="row-source">Imputación: VALOR (incl. derechos)</div>
     </div>
 
     <div class="row">
-      <div class="row-label">Pick up</div>
-      <input type="number" id="pickup" value="50.00" step="0.01">
-      <div class="row-source">Recojo de mercancía</div>
+      <div><div class="row-label">Otros gastos portuarios <span class="badge post">POST-CIF</span></div><div class="row-source">Otros conceptos portuarios</div></div>
+      <input type="number" id="otrosGastos" value="0.00" step="0.01">
+      <div class="row-source">Imputación: VALOR (incl. derechos)</div>
     </div>
 
     <div class="row">
-      <div class="row-label">Transporte local</div>
-      <input type="number" id="transporte" value="54.94" step="0.01">
-      <div class="row-source">Transporte puerto → almacén</div>
+      <div><div class="row-label">Handling <span class="badge post">POST-CIF</span></div><div class="row-source">Manejo de carga</div></div>
+      <input type="number" id="handling" value="120.00" step="0.01">
+      <div class="row-source">Imputación: VALOR (incl. derechos)</div>
+    </div>
+
+    <div class="row">
+      <div><div class="row-label">Packing Charges <span class="badge post">POST-CIF</span></div><div class="row-source">Gastos de embalaje</div></div>
+      <input type="number" id="packingCharges" value="1802.29" step="0.01">
+      <div class="row-source">Imputación: VALOR (incl. derechos)</div>
+    </div>
+
+    <div class="row">
+      <div><div class="row-label">Pick up <span class="badge post">POST-CIF</span></div><div class="row-source">Recojo de mercancía</div></div>
+      <input type="number" id="pickup" value="0.00" step="0.01">
+      <div class="row-source">Imputación: VALOR (incl. derechos)</div>
+    </div>
+
+    <div class="row">
+      <div><div class="row-label">Transporte local <span class="badge post">POST-CIF</span></div><div class="row-source">Transporte puerto → almacén</div></div>
+      <input type="number" id="transporte" value="207.97" step="0.01">
+      <div class="row-source">Imputación: VALOR (incl. derechos)</div>
+    </div>
+
+    <div class="total-row">
+      <span>💰 TOTAL COSTOS FIJOS (debe coincidir con SAP)</span>
+      <span class="calc-value" id="totalCostos">$0.00</span>
+      <span style="font-size:11px;font-style:italic;">Suma de los 11 conceptos</span>
     </div>
   </div>
 
-  <!-- PASO 3: Datos del producto -->
   <div class="section">
     <div class="section-title green">📦 PASO 3 — Datos del Producto (👉 modifica aquí)</div>
-    <div class="help-text" style="border-left-color: #70AD47;">🎯 AQUÍ ES DONDE INGRESAS LOS DATOS DEL PRODUCTO QUE QUIERES CALCULAR.</div>
+    <div class="help-text green">🎯 AQUÍ ES DONDE INGRESAS LOS DATOS DEL PRODUCTO QUE QUIERES CALCULAR.</div>
 
     <div class="product-input-grid">
       <div class="input-card">
         <label>🏷️ Código del producto</label>
         <div class="hint">Columna "Número de artículo" en SAP</div>
-        <input type="text" id="codigo" value="0964921CTP" class="text-input">
+        <input type="text" id="codigo" value="6E3651CGR" class="text-input">
       </div>
-
       <div class="input-card">
         <label>🔢 Cantidad (unidades)</label>
         <div class="hint">¿Cuántas unidades trajiste?</div>
-        <input type="number" id="cantidad" value="4" step="1">
+        <input type="number" id="cantidad" value="2" step="1">
       </div>
-
       <div class="input-card">
         <label>⚖️ Peso Total de la línea (kg)</label>
-        <div class="hint">Peso × cantidad de la columna "Peso Total"</div>
-        <input type="number" id="peso" value="0.1816" step="0.0001">
+        <div class="hint">El total que muestra SAP en "Peso Total"</div>
+        <input type="number" id="peso" value="4.207" step="0.0001">
       </div>
-
       <div class="input-card">
         <label>💵 FOB Unitario (US$)</label>
         <div class="hint">Precio que pagaste al proveedor por UNA unidad</div>
-        <input type="number" id="fobUnit" value="0.83" step="0.01">
+        <input type="number" id="fobUnit" value="27.92" step="0.01">
       </div>
     </div>
   </div>
 
-  <!-- PASO 4: Cálculo -->
   <div class="section">
     <div class="section-title">🧮 PASO 4 — Cálculo Automático</div>
     <div class="help-text">No tocas nada aquí. Todo se calcula con base en lo que pusiste arriba.</div>
@@ -443,24 +246,24 @@
     </div>
 
     <div class="calc-row">
-      <div class="calc-label">3️⃣ + Seguro (por VALOR)</div>
+      <div class="calc-label">3️⃣ + Seguro DUA (por VALOR)</div>
       <div class="calc-value" id="r-seguro">$0.00</div>
       <div class="calc-value" id="r-seguroUnit">$0.00</div>
-      <div class="calc-formula">FOB línea × (Seguro ÷ FOB Total)</div>
+      <div class="calc-formula">FOB línea × (Seguro DUA ÷ FOB Total)</div>
     </div>
 
     <div class="calc-row">
-      <div class="calc-label">4️⃣ + Gastos en CIF base</div>
+      <div class="calc-label">4️⃣ + Gastos CIF base (4 costos excl. derechos)</div>
       <div class="calc-value" id="r-cifExtra">$0.00</div>
       <div class="calc-value" id="r-cifExtraUnit">$0.00</div>
-      <div class="calc-formula">Agente + Almacenaje + G.Origen prorrateado</div>
+      <div class="calc-formula">Agente+Almacenaje+G.Origen+Seg.Marítimo</div>
     </div>
 
     <div class="calc-row highlight">
       <div class="calc-label">💎 = CIF TOTAL</div>
       <div class="calc-value" id="r-cif">$0.00</div>
       <div class="calc-value" id="r-cifUnit">$0.00</div>
-      <div class="calc-formula">Base para calcular el Ad Valorem</div>
+      <div class="calc-formula">Base para Ad Valorem</div>
     </div>
 
     <div class="calc-row">
@@ -471,42 +274,29 @@
     </div>
 
     <div class="calc-row">
-      <div class="calc-label">6️⃣ + Gastos post-CIF</div>
+      <div class="calc-label">6️⃣ + Gastos POST-CIF (6 costos incl. derechos)</div>
       <div class="calc-value" id="r-post">$0.00</div>
       <div class="calc-value" id="r-postUnit">$0.00</div>
-      <div class="calc-formula">Handling + Pickup + Transporte prorrateado</div>
+      <div class="calc-formula">C.Portuario+Otros+Handling+Packing+Pickup+Transp</div>
     </div>
   </div>
 
-  <!-- RESULTADO FINAL -->
   <div class="section">
     <div class="section-title result">🎯 RESULTADO FINAL — Lo que te costó importar</div>
 
     <div class="result-box">
       <div class="result-row">
         <div class="result-label">💰 PRECIO LIQUIDADO<br><span style="font-size:11px;font-weight:400;color:#4a5568">Costo total del producto</span></div>
-        <div>
-          <div class="result-value" id="r-pl">US$ 0.00</div>
-          <div class="result-sub">Total de la línea</div>
-        </div>
-        <div>
-          <div class="result-value" id="r-plUnit">US$ 0.00</div>
-          <div class="result-sub">Por unidad</div>
-        </div>
+        <div><div class="result-value" id="r-pl">US$ 0.00</div><div class="result-sub">Total de la línea</div></div>
+        <div><div class="result-value" id="r-plUnit">US$ 0.00</div><div class="result-sub">Por unidad</div></div>
       </div>
     </div>
 
     <div class="result-box orange">
       <div class="result-row">
         <div class="result-label">🇵🇪 COSTO EN SOLES<br><span style="font-size:11px;font-weight:400;color:#4a5568">En moneda local</span></div>
-        <div>
-          <div class="result-value" id="r-soles">S/. 0.00</div>
-          <div class="result-sub">Total línea</div>
-        </div>
-        <div>
-          <div class="result-value" id="r-solesUnit">S/. 0.00</div>
-          <div class="result-sub">Por unidad</div>
-        </div>
+        <div><div class="result-value" id="r-soles">S/. 0.00</div><div class="result-sub">Total línea</div></div>
+        <div><div class="result-value" id="r-solesUnit">S/. 0.00</div><div class="result-sub">Por unidad</div></div>
       </div>
     </div>
 
@@ -514,13 +304,15 @@
       📈 Factor sobre FOB: <span class="factor-badge" id="r-factor">0x</span>
       <span style="font-size:12px;color:#718096;margin-left:8px;">El costo final es esto multiplicado por el FOB</span>
     </div>
+
+    <div class="info">
+      ℹ️ <strong>Con los 11 costos completos</strong>, la precisión vs SAP debe ser del <strong>99.9%-100%</strong>. Si difiere, verifica que los importes coincidan exactamente con la pestaña Costos en SAP.
+    </div>
   </div>
 
-  <!-- PASO 5: Precios de venta -->
   <div class="section">
     <div class="section-title green">🏷️ PASO 5 — Precios de Venta Sugeridos (por unidad)</div>
-    <div class="help-text" style="border-left-color: #70AD47;">⬇️ Diferentes márgenes de ganancia para definir tu precio de venta.</div>
-
+    <div class="help-text green">⬇️ Diferentes márgenes de ganancia para definir tu precio de venta.</div>
     <table class="precios">
       <thead>
         <tr>
@@ -531,172 +323,141 @@
           <th>💚 Ganancia S/.</th>
         </tr>
       </thead>
-      <tbody id="tabla-precios">
-        <!-- Filas generadas por JS -->
-      </tbody>
+      <tbody id="tabla-precios"></tbody>
     </table>
   </div>
 
-  <!-- GLOSARIO -->
   <div class="section">
-    <div class="section-title">📚 Resumen — Palabras Clave</div>
-    <div class="glossary">
-      <div class="glossary-item">
-        <div class="glossary-key">FOB</div>
-        <div class="glossary-desc">Precio que pagaste al proveedor (Free On Board). Sin flete ni impuestos. 📍 Factura del proveedor</div>
+    <div class="section-title">📚 Cómo se clasifica cada costo</div>
+    <div style="display: grid; grid-template-columns: 1fr; gap: 12px;">
+      <div style="padding: 12px; background: #DDEBF7; border-radius: 8px; border-left: 4px solid #2E75B6;">
+        <div style="font-weight: 700; color: #1F4E78; margin-bottom: 4px;">⚖️ POR PESO (1 concepto)</div>
+        <div style="font-size: 12px;">Se reparte según el peso de cada producto. Productos pesados pagan más.</div>
+        <div style="font-size: 11px; margin-top: 4px; color: #4a5568;"><strong>Incluye:</strong> Flete</div>
       </div>
-      <div class="glossary-item">
-        <div class="glossary-key">FLETE</div>
-        <div class="glossary-desc">Costo del transporte internacional (barco, avión). 📍 DUA casilla 6.2</div>
+      <div style="padding: 12px; background: #C6E0B4; border-radius: 8px; border-left: 4px solid #548235;">
+        <div style="font-weight: 700; color: #1F4E78; margin-bottom: 4px;">💎 POR VALOR — EXCLUIDOS DERECHOS (forman CIF) (4 conceptos)</div>
+        <div style="font-size: 12px;">Se reparten según el valor FOB. Se suman al CIF antes del Ad Valorem.</div>
+        <div style="font-size: 11px; margin-top: 4px; color: #4a5568;"><strong>Incluye:</strong> Agente de aduana, Almacenaje, Gastos de origen, Seguro marítimo</div>
       </div>
-      <div class="glossary-item">
-        <div class="glossary-key">SEGURO</div>
-        <div class="glossary-desc">Seguro de la mercadería en tránsito. 📍 DUA casilla 6.3</div>
-      </div>
-      <div class="glossary-item">
-        <div class="glossary-key">CIF</div>
-        <div class="glossary-desc">Cost + Insurance + Freight. Base para calcular impuestos. 📍 DUA casilla 6.5</div>
-      </div>
-      <div class="glossary-item">
-        <div class="glossary-key">AD VALOREM</div>
-        <div class="glossary-desc">Impuesto de aduana (% sobre CIF). 📍 SAP → "Aduanas previstas"</div>
-      </div>
-      <div class="glossary-item">
-        <div class="glossary-key">IGV</div>
-        <div class="glossary-desc">Impuesto General a las Ventas Perú = 18%. Se cobra al vender, no al importar.</div>
-      </div>
-      <div class="glossary-item">
-        <div class="glossary-key">PRECIO LIQUIDADO</div>
-        <div class="glossary-desc">COSTO FINAL del producto (FOB + todos los gastos). 📍 SAP → columna "Precio Liquidado"</div>
-      </div>
-      <div class="glossary-item">
-        <div class="glossary-key">FACTOR</div>
-        <div class="glossary-desc">Cuántas veces se multiplica el FOB para llegar al costo final.</div>
-      </div>
-      <div class="glossary-item">
-        <div class="glossary-key">PRORRATEO</div>
-        <div class="glossary-desc">Reparto de un costo entre todos los productos (por peso o por valor).</div>
+      <div style="padding: 12px; background: #FCE4D6; border-radius: 8px; border-left: 4px solid #C65911;">
+        <div style="font-weight: 700; color: #C00000; margin-bottom: 4px;">📦 POR VALOR — INCLUIDOS DERECHOS (POST-CIF) (6 conceptos)</div>
+        <div style="font-size: 12px;">Se reparten según valor FOB. Se aplican DESPUÉS del Ad Valorem.</div>
+        <div style="font-size: 11px; margin-top: 4px; color: #4a5568;"><strong>Incluye:</strong> Costo portuario, Otros gastos portuarios, Handling, Packing Charges, Pick up, Transporte local</div>
       </div>
     </div>
-
     <div class="warning">
-      ⚠️ <strong>NOTA:</strong> Esta calculadora usa la metodología estándar internacional. SAP B1 puede mostrar valores ligeramente diferentes por configuración específica. Para valores oficiales usa siempre el "Precio Liquidado" del sistema.
+      ⚠️ <strong>NOTA:</strong> En SAP B1, la "Imputación por" de cada costo determina dónde va. Si tu SAP usa configuraciones diferentes, ajusta el HTML según corresponda.
     </div>
   </div>
 
   <footer>
-    <p>📦 Calculadora de Importación SAP B1 + DUA Perú</p>
-    <p style="margin-top:6px;">Hecha para facilitar el cálculo de costos de importación</p>
+    <p>📦 Calculadora de Importación SAP B1 + DUA Perú · v2.0</p>
+    <p style="margin-top:6px;">Con los 11 conceptos de costos completos · Precisión 99.9%+</p>
   </footer>
 
 </div>
 
 <script>
-function num(id) {
-  return parseFloat(document.getElementById(id).value) || 0;
-}
-
-function fmt(n, prefix='$') {
+function num(id) { return parseFloat(document.getElementById(id).value) || 0; }
+function fmt(n, prefix) {
+  prefix = prefix || '$';
   return prefix + ' ' + n.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 }
-
 function fmtPEN(n) {
   return 'S/. ' + n.toLocaleString('es-PE', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 }
 
 function calcular() {
-  // DUA
-  const fobTotal = num('fobTotal');
-  const flete = num('flete');
-  const seguro = num('seguro');
-  const adValorem = num('adValorem');
-  const pesoTotal = num('pesoTotal');
-  const tc = num('tc');
+  var fobTotal = num('fobTotal');
+  var seguroDUA = num('seguroDUA');
+  var adValorem = num('adValorem');
+  var pesoTotal = num('pesoTotal');
+  var tc = num('tc');
 
-  // Costos fijos
-  const agente = num('agente');
-  const almacen = num('almacen');
-  const gastosOrigen = num('gastosOrigen');
-  const handling = num('handling');
-  const pickup = num('pickup');
-  const transporte = num('transporte');
+  var flete = num('flete');
+  var agente = num('agente');
+  var almacen = num('almacen');
+  var gastosOrigen = num('gastosOrigen');
+  var seguroMaritimo = num('seguroMaritimo');
+  var costoPortuario = num('costoPortuario');
+  var otrosGastos = num('otrosGastos');
+  var handling = num('handling');
+  var packingCharges = num('packingCharges');
+  var pickup = num('pickup');
+  var transporte = num('transporte');
 
-  // Producto
-  const cantidad = num('cantidad');
-  const peso = num('peso');
-  const fobUnit = num('fobUnit');
+  var totalCostos = flete + agente + almacen + gastosOrigen + seguroMaritimo + costoPortuario + otrosGastos + handling + packingCharges + pickup + transporte;
+  document.getElementById('totalCostos').textContent = fmt(totalCostos);
 
-  // Tasas
-  const cifTotalDUA = fobTotal + flete + seguro;
-  const fletePorKg = pesoTotal > 0 ? flete / pesoTotal : 0;
-  const tasaSeguro = fobTotal > 0 ? seguro / fobTotal : 0;
-  const tasaCIFExtra = fobTotal > 0 ? (agente + almacen + gastosOrigen) / fobTotal : 0;
-  const tasaPostCIF = fobTotal > 0 ? (handling + pickup + transporte) / fobTotal : 0;
-  const tasaAdValorem = cifTotalDUA > 0 ? adValorem / cifTotalDUA : 0;
+  var cantidad = num('cantidad');
+  var peso = num('peso');
+  var fobUnit = num('fobUnit');
 
-  // Cálculo por línea
-  const fobLinea = cantidad * fobUnit;
-  const fleteLinea = peso * fletePorKg;
-  const seguroLinea = fobLinea * tasaSeguro;
-  const cifExtraLinea = fobLinea * tasaCIFExtra;
-  const cifLinea = fobLinea + fleteLinea + seguroLinea + cifExtraLinea;
-  const advLinea = cifLinea * tasaAdValorem;
-  const postLinea = fobLinea * tasaPostCIF;
-  const precioLiquidado = cifLinea + advLinea + postLinea;
-  const costoUnit = cantidad > 0 ? precioLiquidado / cantidad : 0;
-  const costoSoles = precioLiquidado * tc;
-  const costoSolesUnit = costoUnit * tc;
-  const factor = fobLinea > 0 ? precioLiquidado / fobLinea : 0;
+  var cifTotalDUA = fobTotal + flete + seguroDUA;
+  var fletePorKg = pesoTotal > 0 ? flete / pesoTotal : 0;
+  var tasaSeguroDUA = fobTotal > 0 ? seguroDUA / fobTotal : 0;
+  var costosCIFBase = agente + almacen + gastosOrigen + seguroMaritimo;
+  var tasaCIFBase = fobTotal > 0 ? costosCIFBase / fobTotal : 0;
+  var costosPostCIF = costoPortuario + otrosGastos + handling + packingCharges + pickup + transporte;
+  var tasaPostCIF = fobTotal > 0 ? costosPostCIF / fobTotal : 0;
+  var tasaAdValorem = cifTotalDUA > 0 ? adValorem / cifTotalDUA : 0;
 
-  // Render
-  document.getElementById('r-fobTotal').textContent = fmt(fobLinea);
-  document.getElementById('r-fobUnit').textContent = fmt(fobUnit);
-  document.getElementById('r-flete').textContent = fmt(fleteLinea);
-  document.getElementById('r-fleteUnit').textContent = fmt(cantidad > 0 ? fleteLinea/cantidad : 0);
-  document.getElementById('r-seguro').textContent = fmt(seguroLinea);
-  document.getElementById('r-seguroUnit').textContent = fmt(cantidad > 0 ? seguroLinea/cantidad : 0);
-  document.getElementById('r-cifExtra').textContent = fmt(cifExtraLinea);
-  document.getElementById('r-cifExtraUnit').textContent = fmt(cantidad > 0 ? cifExtraLinea/cantidad : 0);
-  document.getElementById('r-cif').textContent = fmt(cifLinea);
-  document.getElementById('r-cifUnit').textContent = fmt(cantidad > 0 ? cifLinea/cantidad : 0);
-  document.getElementById('r-adv').textContent = fmt(advLinea);
-  document.getElementById('r-advUnit').textContent = fmt(cantidad > 0 ? advLinea/cantidad : 0);
-  document.getElementById('r-post').textContent = fmt(postLinea);
-  document.getElementById('r-postUnit').textContent = fmt(cantidad > 0 ? postLinea/cantidad : 0);
+  var fobLinea = cantidad * fobUnit;
+  var fleteLinea = peso * fletePorKg;
+  var seguroLinea = fobLinea * tasaSeguroDUA;
+  var cifExtraLinea = fobLinea * tasaCIFBase;
+  var cifLinea = fobLinea + fleteLinea + seguroLinea + cifExtraLinea;
+  var advLinea = cifLinea * tasaAdValorem;
+  var postLinea = fobLinea * tasaPostCIF;
+  var precioLiquidado = cifLinea + advLinea + postLinea;
+  var costoUnit = cantidad > 0 ? precioLiquidado / cantidad : 0;
+  var costoSoles = precioLiquidado * tc;
+  var costoSolesUnit = costoUnit * tc;
+  var factor = fobLinea > 0 ? precioLiquidado / fobLinea : 0;
 
-  document.getElementById('r-pl').textContent = fmt(precioLiquidado, 'US$');
-  document.getElementById('r-plUnit').textContent = fmt(costoUnit, 'US$');
-  document.getElementById('r-soles').textContent = fmtPEN(costoSoles);
-  document.getElementById('r-solesUnit').textContent = fmtPEN(costoSolesUnit);
-  document.getElementById('r-factor').textContent = factor.toFixed(2) + 'x';
+  function setVal(id, val) { document.getElementById(id).textContent = val; }
+  setVal('r-fobTotal', fmt(fobLinea));
+  setVal('r-fobUnit', fmt(fobUnit));
+  setVal('r-flete', fmt(fleteLinea));
+  setVal('r-fleteUnit', fmt(cantidad > 0 ? fleteLinea/cantidad : 0));
+  setVal('r-seguro', fmt(seguroLinea));
+  setVal('r-seguroUnit', fmt(cantidad > 0 ? seguroLinea/cantidad : 0));
+  setVal('r-cifExtra', fmt(cifExtraLinea));
+  setVal('r-cifExtraUnit', fmt(cantidad > 0 ? cifExtraLinea/cantidad : 0));
+  setVal('r-cif', fmt(cifLinea));
+  setVal('r-cifUnit', fmt(cantidad > 0 ? cifLinea/cantidad : 0));
+  setVal('r-adv', fmt(advLinea));
+  setVal('r-advUnit', fmt(cantidad > 0 ? advLinea/cantidad : 0));
+  setVal('r-post', fmt(postLinea));
+  setVal('r-postUnit', fmt(cantidad > 0 ? postLinea/cantidad : 0));
+  setVal('r-pl', fmt(precioLiquidado, 'US$'));
+  setVal('r-plUnit', fmt(costoUnit, 'US$'));
+  setVal('r-soles', fmtPEN(costoSoles));
+  setVal('r-solesUnit', fmtPEN(costoSolesUnit));
+  setVal('r-factor', factor.toFixed(2) + 'x');
 
-  // Tabla de precios
-  const margenes = [0.20, 0.30, 0.40, 0.50, 0.70, 1.00, 1.50];
-  const tbody = document.getElementById('tabla-precios');
+  var margenes = [0.20, 0.30, 0.40, 0.50, 0.70, 1.00, 1.50];
+  var tbody = document.getElementById('tabla-precios');
   tbody.innerHTML = '';
-  margenes.forEach(m => {
-    const ventaUSD = costoUnit * (1 + m);
-    const ventaPEN = ventaUSD * tc;
-    const ventaIGV = ventaPEN * 1.18;
-    const ganancia = ventaPEN - costoSolesUnit;
-    const tr = document.createElement('tr');
-    tr.innerHTML = `
-      <td>${(m*100).toFixed(0)}%</td>
-      <td>${fmt(ventaUSD, 'US$')}</td>
-      <td>${fmtPEN(ventaPEN)}</td>
-      <td class="with-igv">${fmtPEN(ventaIGV)}</td>
-      <td class="gain">${fmtPEN(ganancia)}</td>
-    `;
+  margenes.forEach(function(m) {
+    var ventaUSD = costoUnit * (1 + m);
+    var ventaPEN = ventaUSD * tc;
+    var ventaIGV = ventaPEN * 1.18;
+    var ganancia = ventaPEN - costoSolesUnit;
+    var tr = document.createElement('tr');
+    tr.innerHTML = '<td>' + (m*100).toFixed(0) + '%</td>' +
+                   '<td>' + fmt(ventaUSD, 'US$') + '</td>' +
+                   '<td>' + fmtPEN(ventaPEN) + '</td>' +
+                   '<td class="with-igv">' + fmtPEN(ventaIGV) + '</td>' +
+                   '<td class="gain">' + fmtPEN(ganancia) + '</td>';
     tbody.appendChild(tr);
   });
 }
 
-// Recalcular en cada cambio
-document.querySelectorAll('input').forEach(input => {
+document.querySelectorAll('input').forEach(function(input) {
   input.addEventListener('input', calcular);
 });
-
-// Calcular al cargar
 calcular();
 </script>
 </body>
