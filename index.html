@@ -311,9 +311,24 @@
         <div id="currencyInfo" class="currency-info">Ingresando en USD ($)</div>
         
         <div id="eurRateRow" class="eur-rate-row">
-          <div class="conversion-result" style="text-align:center;">
-            FOB convertido a USD: <strong id="fobConverted">$0.00</strong>
-            <div style="font-size:10px;font-style:italic;color:#4a5568;margin-top:4px;">📍 Tasa EUR→USD configurada arriba en PASO 0</div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+            <div>
+              <label style="font-size:11px;color:#1F4E78;font-weight:700;display:block;margin-bottom:4px;">💶→💵 Tasa EUR→USD</label>
+              <input type="number" id="eurRateInline" value="1.1631" step="0.0001" style="width:100%;padding:6px 8px;font-size:13px;border:2px solid #FFC000;background:#FFF2CC;border-radius:4px;text-align:center;font-weight:700;color:#C00000;">
+              <div class="conversion-result" style="margin-top:6px;padding:6px;font-size:11px;">
+                FOB → USD: <strong id="fobConverted">$0.00</strong>
+              </div>
+            </div>
+            <div>
+              <label style="font-size:11px;color:#1F4E78;font-weight:700;display:block;margin-bottom:4px;">💵→🇵🇪 Tasa USD→PEN</label>
+              <input type="number" id="tcInline" value="3.417" step="0.001" style="width:100%;padding:6px 8px;font-size:13px;border:2px solid #FFC000;background:#FFF2CC;border-radius:4px;text-align:center;font-weight:700;color:#C00000;">
+              <div class="conversion-result" style="margin-top:6px;padding:6px;font-size:11px;background:#F4B084;color:#1F4E78;">
+                FOB → Soles: <strong id="fobConvertedPEN">S/. 0.00</strong>
+              </div>
+            </div>
+          </div>
+          <div style="font-size:10px;font-style:italic;color:#4a5568;margin-top:8px;text-align:center;">
+            💡 Las tasas también están en PASO 0 — al cambiarlas aquí se sincronizan automáticamente
           </div>
         </div>
       </div>
@@ -581,9 +596,12 @@ function calcular() {
   var eurRate = num('eurRate');
   var fobUnit = currency === 'EUR' ? fobUnitInput * eurRate : fobUnitInput;
   
-  // Mostrar conversión si es EUR
+  // Mostrar conversiones si es EUR
   if (currency === 'EUR') {
     document.getElementById('fobConverted').textContent = fmt(fobUnit, 'US$');
+    var fobPEN = fobUnit * tc;
+    var fobConvPEN = document.getElementById('fobConvertedPEN');
+    if (fobConvPEN) fobConvPEN.textContent = fmtPEN(fobPEN);
   }
 
   // ===== TASAS =====
@@ -742,6 +760,52 @@ var eurRateEl = document.getElementById('eurRate');
 var tcEl = document.getElementById('tc');
 if (eurRateEl) eurRateEl.addEventListener('input', updateRateExamples);
 if (tcEl) tcEl.addEventListener('input', updateRateExamples);
+
+// Sincronizar tasas entre PASO 0 y los inline del FOB card
+function syncRates() {
+  var tcGlobal = document.getElementById('tc');
+  var tcInline = document.getElementById('tcInline');
+  var eurGlobal = document.getElementById('eurRate');
+  var eurInline = document.getElementById('eurRateInline');
+  
+  if (tcInline && tcGlobal) {
+    tcInline.value = tcGlobal.value;
+  }
+  if (eurInline && eurGlobal) {
+    eurInline.value = eurGlobal.value;
+  }
+}
+
+// Cuando cambien los inline, actualizar los globales y recalcular
+document.addEventListener('DOMContentLoaded', function() {
+  var tcInline = document.getElementById('tcInline');
+  var eurInline = document.getElementById('eurRateInline');
+  var tcGlobal = document.getElementById('tc');
+  var eurGlobal = document.getElementById('eurRate');
+  
+  if (tcInline) {
+    tcInline.addEventListener('input', function() {
+      if (tcGlobal) tcGlobal.value = tcInline.value;
+      updateRateExamples();
+      calcular();
+    });
+  }
+  if (eurInline) {
+    eurInline.addEventListener('input', function() {
+      if (eurGlobal) eurGlobal.value = eurInline.value;
+      updateRateExamples();
+      calcular();
+    });
+  }
+  if (tcGlobal) {
+    tcGlobal.addEventListener('input', syncRates);
+  }
+  if (eurGlobal) {
+    eurGlobal.addEventListener('input', syncRates);
+  }
+  syncRates();
+});
+
 </script>
 </body>
 </html>
