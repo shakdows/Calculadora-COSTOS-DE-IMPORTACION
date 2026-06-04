@@ -62,9 +62,7 @@
   .input-card .hint { font-size: 11px; color: #718096; margin-bottom: 6px; }
   .total-row { display: grid; grid-template-columns: 1.6fr 1.2fr 1.8fr; gap: 10px; align-items: center; padding: 12px 10px; background: #1F4E78; color: white; border-radius: 6px; margin-top: 10px; font-weight: 700; }
   .total-row .calc-value, .total-row span { color: white; font-size: 14px; }
-  .total-check { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 700; margin-left: 8px; }
-  .total-check.ok { background: #C6E0B4; color: #1F4E78; }
-  .total-check.warn { background: #FCE4D6; color: #C00000; }
+  
   footer { text-align: center; padding: 20px; color: #718096; font-size: 12px; }
   @media (max-width: 700px) {
     .row, .calc-row { grid-template-columns: 1fr; gap: 4px; }
@@ -265,7 +263,7 @@
     <div class="total-row">
       <span>💰 TOTAL COSTOS FIJOS</span>
       <span class="calc-value" id="totalCostos">$0.00</span>
-      <span style="font-size:11px;">Debe coincidir con SAP <span id="totalCheck" class="total-check ok">✓</span></span>
+      <span style="font-size:11px;">Suma de los 11 conceptos</span>
     </div>
   </div>
 
