@@ -74,6 +74,26 @@
     table.precios { font-size: 11px; }
     table.precios th, table.precios td { padding: 6px 4px; }
   }
+
+  .stages-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-top: 10px; }
+  .stage { display: grid; grid-template-columns: 50px 1fr 1.5fr; gap: 12px; padding: 14px; background: #f7fafc; border-radius: 8px; border-left: 5px solid #2E75B6; align-items: center; }
+  .stage.stage-cif { background: #C6E0B4; border-left-color: #548235; }
+  .stage.stage-tributo { background: #FCE4D6; border-left-color: #C65911; }
+  .stage-num { font-size: 28px; text-align: center; font-weight: 700; color: #1F4E78; }
+  .stage-title { font-weight: 700; font-size: 14px; color: #1F4E78; }
+  .stage-desc { font-size: 11px; color: #4a5568; margin-top: 2px; }
+  .stage-formula { font-family: 'Courier New', monospace; font-size: 13px; background: white; padding: 8px 12px; border-radius: 6px; border: 1px solid #cbd5e0; color: #1F4E78; font-weight: 600; }
+  .stage-warn { grid-column: 1 / -1; margin-top: 8px; padding: 8px 10px; background: #FFF3CD; border-radius: 4px; font-size: 11px; color: #856404; border-left: 3px solid #F0B100; }
+  .formula-final { background: linear-gradient(135deg, #C6E0B4 0%, #A9D08E 100%); padding: 16px; border-radius: 10px; margin-top: 16px; border: 2px solid #548235; text-align: center; }
+  .formula-final strong { color: #1F4E78; font-size: 14px; }
+  .formula-final code { display: inline-block; margin-top: 8px; padding: 10px 16px; background: white; border-radius: 6px; font-size: 14px; font-weight: 700; color: #C00000; }
+  .formula-final .note { font-size: 11px; color: #4a5568; margin-top: 8px; font-style: italic; }
+  .tributo-table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+  .tributo-table th { background: #1F4E78; color: white; padding: 8px; text-align: left; }
+  .tributo-table td { padding: 8px; border-bottom: 1px solid #edf2f7; }
+  .tributo-table td.si { background: #C6E0B4; color: #1F4E78; font-weight: 700; text-align: center; }
+  .tributo-table td.no { background: #FCE4D6; color: #C00000; font-weight: 700; text-align: center; }
+
 </style>
 </head>
 <body>
@@ -312,6 +332,112 @@
         </tr>
       </thead>
       <tbody id="tabla-precios"></tbody>
+    </table>
+  </div>
+
+
+  <div class="section">
+    <div class="section-title">📚 Las 5 Etapas del Costo de Importación (Perú)</div>
+    <div class="help-text">Marco conceptual completo: desde la compra al proveedor hasta el costo final en tu almacén.</div>
+
+    <div class="stages-grid">
+      <div class="stage">
+        <div class="stage-num">1️⃣</div>
+        <div>
+          <div class="stage-title">COMPRA</div>
+          <div class="stage-desc">Valor pactado con el proveedor en el extranjero</div>
+        </div>
+        <div class="stage-formula">FOB</div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-num">2️⃣</div>
+        <div>
+          <div class="stage-title">TRASLADO INTERNACIONAL</div>
+          <div class="stage-desc">Transporte desde puerto de origen hasta puerto de Perú</div>
+        </div>
+        <div class="stage-formula">+ Flete + Seguro</div>
+      </div>
+
+      <div class="stage stage-cif">
+        <div class="stage-num">3️⃣</div>
+        <div>
+          <div class="stage-title">BASE ADUANERA (CIF) 💎</div>
+          <div class="stage-desc">Valor sobre el que se calculan los aranceles. Es el "Valor Aduana" de la DUA.</div>
+        </div>
+        <div class="stage-formula">= FOB + Flete + Seguro</div>
+      </div>
+
+      <div class="stage stage-tributo">
+        <div class="stage-num">4️⃣</div>
+        <div>
+          <div class="stage-title">TRIBUTOS</div>
+          <div class="stage-desc">Impuestos pagados a SUNAT al nacionalizar la mercadería</div>
+        </div>
+        <div class="stage-formula">+ Ad Valorem (+ ISC si aplica)</div>
+        <div class="stage-warn">
+          ⚠️ <strong>Importante:</strong> Solo el Ad Valorem y el ISC son COSTO REAL del producto. El IGV, IPM y Percepción son CRÉDITO FISCAL — se recuperan y NO se suman al costo.
+        </div>
+      </div>
+
+      <div class="stage">
+        <div class="stage-num">5️⃣</div>
+        <div>
+          <div class="stage-title">GASTOS LOCALES</div>
+          <div class="stage-desc">Terminal, agencia, almacén, handling, transporte interno hasta tu almacén</div>
+        </div>
+        <div class="stage-formula">+ 11 Costos Fijos SAP</div>
+      </div>
+    </div>
+
+    <div class="formula-final">
+      <strong>📐 FÓRMULA DEL COSTO REAL (Peru Tractor B2B):</strong><br>
+      <code>FOB + Flete + Seguro + Ad Valorem + Gastos Locales</code>
+      <div class="note">💡 Esta es exactamente la fórmula que usa tu calculadora. El IGV/IPM/Percepción no se incluyen porque son crédito fiscal recuperable.</div>
+    </div>
+
+    <h3 style="margin-top: 20px; font-size: 14px; color: #1F4E78;">🧾 Tabla de Tributos en Perú</h3>
+    <table class="tributo-table">
+      <thead>
+        <tr>
+          <th>Tributo</th>
+          <th>Tasa</th>
+          <th>Calculado sobre</th>
+          <th>¿Es costo del producto?</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Ad Valorem</strong></td>
+          <td>0%, 4%, 6%, 11%</td>
+          <td>CIF</td>
+          <td class="si">✅ SÍ</td>
+        </tr>
+        <tr>
+          <td><strong>ISC</strong></td>
+          <td>Varía (solo productos específicos)</td>
+          <td>CIF + Ad Valorem</td>
+          <td class="si">✅ SÍ (si aplica)</td>
+        </tr>
+        <tr>
+          <td><strong>IGV</strong></td>
+          <td>16%</td>
+          <td>CIF + Ad Valorem + ISC</td>
+          <td class="no">❌ NO (crédito fiscal)</td>
+        </tr>
+        <tr>
+          <td><strong>IPM</strong></td>
+          <td>2%</td>
+          <td>CIF + Ad Valorem + ISC</td>
+          <td class="no">❌ NO (crédito fiscal)</td>
+        </tr>
+        <tr>
+          <td><strong>Percepción IGV</strong></td>
+          <td>3.5% / 5% / 10%</td>
+          <td>CIF + Ad Valorem + ISC + IGV + IPM</td>
+          <td class="no">❌ NO (pago a cuenta)</td>
+        </tr>
+      </tbody>
     </table>
   </div>
 
