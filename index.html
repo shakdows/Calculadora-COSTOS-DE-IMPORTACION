@@ -119,6 +119,14 @@
   .rate-source a { color: #2E75B6; text-decoration: none; }
   @media (max-width: 700px) { .rates-grid { grid-template-columns: 1fr; } }
 
+
+  .weight-btn { flex: 1; padding: 8px 10px; border: 2px solid #cbd5e0; background: white; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; color: #4a5568; }
+  .weight-btn:hover { background: #f7fafc; border-color: #2E75B6; }
+  .weight-btn.active { background: #1F4E78; color: white; border-color: #1F4E78; }
+  .weight-info { font-size: 11px; color: #718096; font-style: italic; margin-top: 4px; }
+  .weight-total-row { display: none; margin-top: 10px; padding: 10px; background: #E2EFDA; border-radius: 6px; border: 1px dashed #70AD47; }
+  .weight-total-row.show { display: block; }
+
 </style>
 </head>
 <body>
@@ -272,9 +280,23 @@
         <input type="number" id="cantidad" value="2" step="1">
       </div>
       <div class="input-card">
-        <label>⚖️ Peso Total línea (kg)</label>
-        <div class="hint">Columna "Peso Total" en SAP</div>
+        <label>⚖️ Peso de la línea (kg)</label>
+        <div class="hint">Elige cómo lo vas a ingresar</div>
+        
+        <div class="currency-toggle">
+          <button type="button" class="weight-btn active" data-mode="total" onclick="setWeightMode('total')">📦 Peso Total</button>
+          <button type="button" class="weight-btn" data-mode="unit" onclick="setWeightMode('unit')">🏷️ Por unidad</button>
+        </div>
+        
         <input type="number" id="peso" value="4.207" step="0.0001">
+        <div id="weightInfo" class="weight-info">Peso TOTAL de la línea (como en SAP: peso × cantidad)</div>
+        
+        <div id="weightTotalRow" class="weight-total-row">
+          <div class="conversion-result" style="text-align:center;background:#C6E0B4;padding:8px;border-radius:4px;">
+            Peso TOTAL calculado: <strong id="pesoTotalCalc">0.0000 kg</strong>
+            <div style="font-size:10px;font-style:italic;color:#4a5568;margin-top:4px;">📍 Peso por unidad × Cantidad</div>
+          </div>
+        </div>
       </div>
       <div class="input-card">
         <label>💵 FOB Unitario</label>
@@ -542,7 +564,17 @@ function calcular() {
 
   // ===== PRODUCTO =====
   var cantidad = num('cantidad');
-  var peso = num('peso');
+  var pesoInput = num('peso');
+  var weightBtn = document.querySelector('.weight-btn.active');
+  var weightMode = weightBtn ? weightBtn.getAttribute('data-mode') : 'total';
+  var peso = weightMode === 'unit' ? pesoInput * cantidad : pesoInput;
+  
+  // Mostrar peso total calculado si es modo "por unidad"
+  if (weightMode === 'unit') {
+    var pesoCalc = document.getElementById('pesoTotalCalc');
+    if (pesoCalc) pesoCalc.textContent = peso.toFixed(4) + ' kg';
+  }
+  
   var fobUnitInput = num('fobUnit');
   var currencyBtn = document.querySelector('.curr-btn.active');
   var currency = currencyBtn ? currencyBtn.getAttribute('data-curr') : 'USD';
@@ -626,6 +658,38 @@ function calcular() {
 }
 
 
+
+
+function setWeightMode(mode) {
+  var buttons = document.querySelectorAll('.weight-btn');
+  buttons.forEach(function(b) {
+    if (b.getAttribute('data-mode') === mode) {
+      b.classList.add('active');
+    } else {
+      b.classList.remove('active');
+    }
+  });
+  
+  var totalRow = document.getElementById('weightTotalRow');
+  var info = document.getElementById('weightInfo');
+  var pesoInput = document.getElementById('peso');
+  
+  if (mode === 'unit') {
+    totalRow.classList.add('show');
+    info.textContent = 'Ingresando peso POR UNIDAD — se multiplica por cantidad automáticamente';
+    info.style.color = '#C00000';
+    info.style.fontWeight = '600';
+    pesoInput.setAttribute('placeholder', 'Ej: 2.1035 (peso de 1 unidad)');
+  } else {
+    totalRow.classList.remove('show');
+    info.textContent = 'Peso TOTAL de la línea (como en SAP: peso × cantidad)';
+    info.style.color = '#718096';
+    info.style.fontWeight = '400';
+    pesoInput.setAttribute('placeholder', 'Ej: 4.207 (peso total de la línea)');
+  }
+  
+  calcular();
+}
 
 function setCurrency(curr) {
   var buttons = document.querySelectorAll('.curr-btn');
