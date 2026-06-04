@@ -47,7 +47,8 @@
   table.precios td { padding: 8px; text-align: right; border-bottom: 1px solid #edf2f7; font-variant-numeric: tabular-nums; }
   table.precios td:first-child { text-align: center; font-weight: 700; color: #C00000; background: #FFF2CC; }
   table.precios tr:hover td { background: #f7fafc; }
-  table.precios td.with-igv { background: #C6E0B4; font-weight: 700; }
+  table.precios td.sin-igv { background: #C6E0B4; font-weight: 700; color: #1F4E78; font-size: 14px; }
+  table.precios td.with-igv { background: #f7fafc; color: #718096; font-size: 11px; font-style: italic; }
   table.precios td.gain { color: #006100; font-weight: 600; }
   .group-header { background: #DDEBF7; padding: 8px 12px; margin: 10px 0 4px 0; border-radius: 6px; font-size: 12px; font-weight: 700; color: #1F4E78; border-left: 4px solid #2E75B6; }
   .group-header.post { background: #FCE4D6; color: #C00000; border-left-color: #C65911; }
@@ -312,14 +313,14 @@
 
   <div class="section">
     <div class="section-title green">🏷️ PASO 5 — Precios de Venta Sugeridos (por unidad)</div>
-    <div class="help-text green">⬇️ Diferentes márgenes de ganancia para definir tu precio de venta.</div>
+    <div class="help-text green">⬇️ Diferentes márgenes sobre tu costo. <strong>La columna verde "SIN IGV" es la que usas en tus cotizaciones B2B</strong> (talleres, mineras, constructoras). El IGV se factura aparte.</div>
     <table class="precios">
       <thead>
         <tr>
           <th>🎯 Margen</th>
           <th>💵 Venta US$</th>
-          <th>🇵🇪 Venta S/.<br>(sin IGV)</th>
-          <th>🛒 Venta S/.<br>(con IGV 18%)</th>
+          <th style="background:#70AD47;">🏢 Venta S/.<br><strong>SIN IGV (B2B)</strong></th>
+          <th style="opacity:0.7;">🛒 Venta S/.<br>(con IGV - ref.)</th>
           <th>💚 Ganancia S/.</th>
         </tr>
       </thead>
@@ -448,7 +449,7 @@ function calcular() {
     var tr = document.createElement('tr');
     tr.innerHTML = '<td>' + (m*100).toFixed(0) + '%</td>' +
                    '<td>' + fmt(ventaUSD, 'US$') + '</td>' +
-                   '<td>' + fmtPEN(ventaPEN) + '</td>' +
+                   '<td class="sin-igv">' + fmtPEN(ventaPEN) + '</td>' +
                    '<td class="with-igv">' + fmtPEN(ventaIGV) + '</td>' +
                    '<td class="gain">' + fmtPEN(ganancia) + '</td>';
     tbody.appendChild(tr);
