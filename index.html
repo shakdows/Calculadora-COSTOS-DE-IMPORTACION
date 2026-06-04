@@ -195,6 +195,11 @@
   <div class="section">
     <div class="section-title">💼 PASO 2 — Costos Fijos (11 conceptos SAP)</div>
     <div class="help-text">⬇️ Si no aplica un costo, déjalo en 0. El total debe coincidir con SAP.</div>
+    
+    <div style="background:#FEF3CD;border-left:4px solid #F0B100;padding:12px;border-radius:6px;font-size:12px;color:#856404;margin-bottom:14px;">
+      ⚠️ <strong>Aclaración importante:</strong> Los términos <strong>"antes/después del Ad Valorem"</strong> NO se refieren al IGV. 
+      Se refieren al impuesto de aduana (Ad Valorem). <strong>Tú siempre ingresas los importes SIN IGV</strong> (el IGV es crédito fiscal y no forma parte del costo del producto). ✅
+    </div>
 
     <div class="group-header peso">⚖️ POR PESO (forma CIF)</div>
     <div class="row">
@@ -203,7 +208,7 @@
       <div class="row-source">Imputación: PESO</div>
     </div>
 
-    <div class="group-header">💎 POR VALOR EXCLUIDOS DERECHOS (forman CIF)</div>
+    <div class="group-header">💎 SE PRORRATEAN ANTES DEL AD VALOREM (forman parte del CIF)</div>
     <div class="row">
       <div><div class="row-label">Agente de aduana <span class="badge cif">CIF</span></div><div class="row-source">Comisión agente aduanero</div></div>
       <input type="number" id="agente" value="392.47" step="0.01">
@@ -225,7 +230,7 @@
       <div class="row-source">Imputación: VALOR excl.</div>
     </div>
 
-    <div class="group-header post">📦 POR VALOR INCLUIDOS DERECHOS (POST-CIF)</div>
+    <div class="group-header post">📦 SE PRORRATEAN DESPUÉS DEL AD VALOREM (POST-CIF)</div>
     <div class="row">
       <div><div class="row-label">Costo portuario <span class="badge post">POST-CIF</span></div><div class="row-source">Gastos puerto destino</div></div>
       <input type="number" id="costoPortuario" value="740.42" step="0.01">
