@@ -105,6 +105,20 @@
   .conversion-result { margin-top: 8px; padding: 8px 10px; background: #C6E0B4; border-radius: 4px; font-size: 12px; color: #1F4E78; font-weight: 600; text-align: center; }
   .currency-info { font-size: 10px; color: #718096; font-style: italic; margin-top: 4px; }
 
+
+  .exchange-rates { background: linear-gradient(135deg, #FFF2CC 0%, #FFE699 100%); border: 2px solid #BF8F00; }
+  .exchange-rates .section-title { background: linear-gradient(135deg, #BF8F00, #8B6914); }
+  .rates-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .rate-card { background: white; padding: 16px; border-radius: 10px; border: 2px solid #FFC000; }
+  .rate-card label { display: block; font-weight: 700; font-size: 14px; color: #1F4E78; margin-bottom: 2px; }
+  .rate-card .hint { font-size: 11px; color: #718096; margin-bottom: 10px; }
+  .rate-card input[type="number"] { width: 100%; padding: 12px; font-size: 22px; font-weight: 700; color: #C00000; text-align: center; background: #FFF2CC; border: 2px solid #FFC000; border-radius: 6px; }
+  .rate-card input[type="number"]:focus { background: #FFE699; border-color: #C00000; outline: none; box-shadow: 0 0 0 3px rgba(192, 0, 0, 0.15); }
+  .rate-example { margin-top: 10px; padding: 8px; background: #C6E0B4; border-radius: 6px; font-size: 12px; color: #1F4E78; text-align: center; font-weight: 600; }
+  .rate-source { font-size: 10px; color: #4a5568; font-style: italic; margin-top: 6px; text-align: center; }
+  .rate-source a { color: #2E75B6; text-decoration: none; }
+  @media (max-width: 700px) { .rates-grid { grid-template-columns: 1fr; } }
+
 </style>
 </head>
 <body>
@@ -115,6 +129,30 @@
     <p>SAP Business One + DUA Aduanas Perú</p>
     <span class="version">v2.1 · 11 costos · B2B sin IGV</span>
   </header>
+
+  <div class="section exchange-rates">
+    <div class="section-title">🏦 PASO 0 — Tipos de Cambio (Configuración Global)</div>
+    <div class="help-text">⬇️ Estos tipos de cambio se aplican a TODOS los cálculos. Actualízalos según el día del despacho.</div>
+
+    <div class="rates-grid">
+      <div class="rate-card">
+        <label>💶 → 💵 EUR a USD</label>
+        <div class="hint">Para facturas de proveedores europeos (Italia, Alemania, etc.)</div>
+        <input type="number" id="eurRate" value="1.1631" step="0.0001">
+        <div class="rate-example" id="eurExample">€100 × 1.1631 = <strong>$116.31</strong></div>
+        <div class="rate-source">Fuente: BCRP — estadisticas.bcrp.gob.pe</div>
+      </div>
+
+      <div class="rate-card">
+        <label>💵 → 🇵🇪 USD a Soles</label>
+        <div class="hint">Para conversión final del costo a moneda local</div>
+        <input type="number" id="tc" value="3.417" step="0.001">
+        <div class="rate-example" id="tcExample">$100 × 3.417 = <strong>S/. 341.70</strong></div>
+        <div class="rate-source">Fuente: BCRP / Día del despacho aduanero</div>
+      </div>
+    </div>
+  </div>
+
 
   <div class="section">
     <div class="section-title">📋 PASO 1 — Datos de la DUA</div>
@@ -144,11 +182,6 @@
       <div class="row-source">kg • Peso toda la importación</div>
     </div>
 
-    <div class="row">
-      <div><div class="row-label">Tipo de Cambio</div><div class="row-source">BCRP</div></div>
-      <input type="number" id="tc" value="3.417" step="0.001">
-      <div class="row-source">PEN/USD</div>
-    </div>
   </div>
 
   <div class="section">
@@ -256,10 +289,9 @@
         <div id="currencyInfo" class="currency-info">Ingresando en USD ($)</div>
         
         <div id="eurRateRow" class="eur-rate-row">
-          <label>🏦 Tasa EUR → USD (BCRP)</label>
-          <input type="number" id="eurRate" value="1.1631" step="0.0001">
-          <div class="conversion-result">
+          <div class="conversion-result" style="text-align:center;">
             FOB convertido a USD: <strong id="fobConverted">$0.00</strong>
+            <div style="font-size:10px;font-style:italic;color:#4a5568;margin-top:4px;">📍 Tasa EUR→USD configurada arriba en PASO 0</div>
           </div>
         </div>
       </div>
@@ -623,10 +655,29 @@ function setCurrency(curr) {
   calcular();
 }
 
+
+function updateRateExamples() {
+  var eur = parseFloat(document.getElementById('eurRate').value) || 0;
+  var tc = parseFloat(document.getElementById('tc').value) || 0;
+  
+  var eurEx = document.getElementById('eurExample');
+  var tcEx = document.getElementById('tcExample');
+  
+  if (eurEx) eurEx.innerHTML = '€100 × ' + eur.toFixed(4) + ' = <strong>$' + (100 * eur).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '</strong>';
+  if (tcEx) tcEx.innerHTML = '$100 × ' + tc.toFixed(3) + ' = <strong>S/. ' + (100 * tc).toLocaleString('es-PE', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + '</strong>';
+}
+
 document.querySelectorAll('input').forEach(function(input) {
   input.addEventListener('input', calcular);
 });
 calcular();
+updateRateExamples();
+
+// Actualizar ejemplos cuando cambien las tasas
+var eurRateEl = document.getElementById('eurRate');
+var tcEl = document.getElementById('tc');
+if (eurRateEl) eurRateEl.addEventListener('input', updateRateExamples);
+if (tcEl) tcEl.addEventListener('input', updateRateExamples);
 </script>
 </body>
 </html>
