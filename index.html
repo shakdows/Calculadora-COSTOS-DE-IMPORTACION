@@ -94,6 +94,17 @@
   .tributo-table td.si { background: #C6E0B4; color: #1F4E78; font-weight: 700; text-align: center; }
   .tributo-table td.no { background: #FCE4D6; color: #C00000; font-weight: 700; text-align: center; }
 
+
+  .currency-toggle { display: flex; gap: 6px; margin-bottom: 8px; }
+  .curr-btn { flex: 1; padding: 8px 10px; border: 2px solid #cbd5e0; background: white; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; transition: all 0.2s; color: #4a5568; }
+  .curr-btn:hover { background: #f7fafc; border-color: #2E75B6; }
+  .curr-btn.active { background: #1F4E78; color: white; border-color: #1F4E78; }
+  .eur-rate-row { display: none; margin-top: 10px; padding: 10px; background: #FFF8E1; border-radius: 6px; border: 1px dashed #FFC000; }
+  .eur-rate-row.show { display: block; }
+  .eur-rate-row label { font-size: 11px; color: #1F4E78; font-weight: 600; display: block; margin-bottom: 4px; }
+  .conversion-result { margin-top: 8px; padding: 8px 10px; background: #C6E0B4; border-radius: 4px; font-size: 12px; color: #1F4E78; font-weight: 600; text-align: center; }
+  .currency-info { font-size: 10px; color: #718096; font-style: italic; margin-top: 4px; }
+
 </style>
 </head>
 <body>
@@ -233,9 +244,24 @@
         <input type="number" id="peso" value="4.207" step="0.0001">
       </div>
       <div class="input-card">
-        <label>💵 FOB Unitario (US$)</label>
-        <div class="hint">Columna "FOB UNITARIO" en SAP</div>
+        <label>💵 FOB Unitario</label>
+        <div class="hint">Precio que pagaste al proveedor por UNA unidad</div>
+        
+        <div class="currency-toggle">
+          <button type="button" class="curr-btn active" data-curr="USD" onclick="setCurrency('USD')">💵 USD ($)</button>
+          <button type="button" class="curr-btn" data-curr="EUR" onclick="setCurrency('EUR')">💶 EUR (€)</button>
+        </div>
+        
         <input type="number" id="fobUnit" value="27.92" step="0.01">
+        <div id="currencyInfo" class="currency-info">Ingresando en USD ($)</div>
+        
+        <div id="eurRateRow" class="eur-rate-row">
+          <label>🏦 Tasa EUR → USD (BCRP)</label>
+          <input type="number" id="eurRate" value="1.1631" step="0.0001">
+          <div class="conversion-result">
+            FOB convertido a USD: <strong id="fobConverted">$0.00</strong>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -485,7 +511,16 @@ function calcular() {
   // ===== PRODUCTO =====
   var cantidad = num('cantidad');
   var peso = num('peso');
-  var fobUnit = num('fobUnit');
+  var fobUnitInput = num('fobUnit');
+  var currencyBtn = document.querySelector('.curr-btn.active');
+  var currency = currencyBtn ? currencyBtn.getAttribute('data-curr') : 'USD';
+  var eurRate = num('eurRate');
+  var fobUnit = currency === 'EUR' ? fobUnitInput * eurRate : fobUnitInput;
+  
+  // Mostrar conversión si es EUR
+  if (currency === 'EUR') {
+    document.getElementById('fobConverted').textContent = fmt(fobUnit, 'US$');
+  }
 
   // ===== TASAS =====
   // CIF DUA (estándar internacional) = FOB + Flete + Seguro
@@ -556,6 +591,36 @@ function calcular() {
                    '<td class="gain">' + fmtPEN(ganancia) + '</td>';
     tbody.appendChild(tr);
   });
+}
+
+
+
+function setCurrency(curr) {
+  var buttons = document.querySelectorAll('.curr-btn');
+  buttons.forEach(function(b) {
+    if (b.getAttribute('data-curr') === curr) {
+      b.classList.add('active');
+    } else {
+      b.classList.remove('active');
+    }
+  });
+  
+  var eurRow = document.getElementById('eurRateRow');
+  var info = document.getElementById('currencyInfo');
+  
+  if (curr === 'EUR') {
+    eurRow.classList.add('show');
+    info.textContent = 'Ingresando en EUR (€) — se convierte automáticamente a USD para los cálculos';
+    info.style.color = '#C00000';
+    info.style.fontWeight = '600';
+  } else {
+    eurRow.classList.remove('show');
+    info.textContent = 'Ingresando en USD ($)';
+    info.style.color = '#718096';
+    info.style.fontWeight = '400';
+  }
+  
+  calcular();
 }
 
 document.querySelectorAll('input').forEach(function(input) {
